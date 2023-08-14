@@ -16,25 +16,26 @@
     <ul id="log_container"></ul>
     <script type="module">
         import { ZodiacChess } from "./js/zodiac_chess.mjs";
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-        import { getDatabase, get, ref, child, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+        const zodiac_chess = new ZodiacChess();
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAWktPCQVPFh3x6gwLwxtXU7ddlIEPXmSQ",
-            authDomain: "zodiacchess-726d2.firebaseapp.com",
-            projectId: "zodiacchess-726d2",
-            storageBucket: "zodiacchess-726d2.appspot.com",
-            messagingSenderId: "659376674370",
-            appId: "1:659376674370:web:eea13f9cab0fd831833fdb",
-            databaseURL: "https://zodiacchess-726d2-default-rtdb.asia-southeast1.firebasedatabase.app/"
-        };
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        // import { getDatabase, get, ref, child, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase();
-        const dbRef = ref(db);
+        // const firebaseConfig = {
+        //     apiKey: "AIzaSyAWktPCQVPFh3x6gwLwxtXU7ddlIEPXmSQ",
+        //     authDomain: "zodiacchess-726d2.firebaseapp.com",
+        //     projectId: "zodiacchess-726d2",
+        //     storageBucket: "zodiacchess-726d2.appspot.com",
+        //     messagingSenderId: "659376674370",
+        //     appId: "1:659376674370:web:eea13f9cab0fd831833fdb",
+        //     databaseURL: "https://zodiacchess-726d2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        // };
 
-        const zodiac_chess = new ZodiacChess({gameId: Date.now()}, db);
+        // const app = initializeApp(firebaseConfig);
+        // const db = getDatabase();
+        // const dbRef = ref(db);
+
+        // const zodiac_chess = new ZodiacChess({gameId: Date.now()}, db);
 
         // get(child(dbRef, `game`)).then((snapshot) => {
         //     if (snapshot.exists()) {

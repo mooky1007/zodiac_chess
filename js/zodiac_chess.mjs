@@ -2,12 +2,12 @@ import { get, ref, child, set, onValue, push } from 'https://www.gstatic.com/fir
 
 export class ZodiacChess {
     constructor(data, db) {
-        this.db = db;
+        // this.db = db;
 
-        onValue(ref(db, `/game`), (snapshot) => {
-            const data = snapshot.val();
-            console.log(data);
-        });
+        // onValue(ref(db, `/game`), (snapshot) => {
+        //     const data = snapshot.val();
+        //     console.log(data);
+        // });
 
         this.gameId = data?.gameId || Date.now();
         this.createMsgBox();
@@ -133,8 +133,8 @@ export class ZodiacChess {
         log.innerHTML = logText;
         log_container.appendChild(log);
 
-        const newLog = push(ref(this.db, `game/${this.gameId}/log`));
-        set(newLog, logText);
+        // const newLog = push(ref(this.db, `game/${this.gameId}/log`));
+        // set(newLog, logText);
     }
 }
 
