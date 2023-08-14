@@ -1,15 +1,17 @@
 import { get, ref, child, set, onValue, push } from 'https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js';
 
+const removeTagForString = (str) => {
+    return str.replace(/(<([^>]+)>)/gi, '');
+};
+
 export class ZodiacChess {
     constructor(data, db) {
-        // this.db = db;
+        this.db = db;
+        this.user = new Date().getTime().toString();
+        this.userColor = '';
 
-        // onValue(ref(db, `/game`), (snapshot) => {
-        //     const data = snapshot.val();
-        //     console.log(data);
-        // });
-
-        this.gameId = data?.gameId || Date.now();
+        this.gameStatus = true;
+        this.gameId = data?.gameId || '0001';
         this.createMsgBox();
         this.board = new Board(this);
         this.redBoard = new OtherBoard(this, 'red');
@@ -21,10 +23,78 @@ export class ZodiacChess {
         this.gameTime = data?.time || 30000;
         this.createTimer();
         this.setUnits();
-        this.turnChange();
+
+        get(child(ref(this.db), `game/${this.gameId}/users`))
+            .then((snapshot) => {
+                const data = snapshot.val();
+                console.log(data);
+                if (!data?.blue) {
+                    set(ref(this.db, `game/${this.gameId}/users/blue`), this.user);
+                    this.userColor = 'blue';
+                    console.log(this.user);
+                    console.log(this.userColor);
+                    return;
+                }
+
+                if (!data?.red) {
+                    set(ref(this.db, `game/${this.gameId}/users/red`), this.user);
+                    this.userColor = 'red';
+                    console.log(this.user);
+                    console.log(this.userColor);
+                    return;
+                }
+
+                alert('Game is full');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+
+        onValue(ref(db, `/game/${this.gameId}/users`), (snapshot) => {
+            const data = snapshot.val();
+            if(data?.blue && data?.red) {
+                this.turnChange();
+            }
+        });
+
+        onValue(ref(db, `/game/${this.gameId}/time`), (snapshot) => {
+            const data = snapshot.val();
+            if (this.userColor !== 'blue') {
+                this.time = data;
+                this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
+                if (this.time <= 0) {
+                    this.checkWin(this.turn === 'blue' ? 'red' : 'blue');
+                }
+            }
+        });
+
+        onValue(ref(db, `/game/${this.gameId}/turn`), (snapshot) => {
+            const data = snapshot.val();
+            this.turn = data;
+            this.renderMsgBox(`<span style="color: ${this.turn}">${this.turn.charAt(0).toLocaleUpperCase()}${this.turn.slice(1)}</span> turn`);
+        });
+
+        onValue(ref(db, `/game/${this.gameId}/winner`), (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                this.timer.innerHTML = `0s`;
+                this.checkWin(data);
+            }else {
+                this.restart();
+            }
+        });
+
+        //브라우저 창을 닫았을 때
+        window.addEventListener('beforeunload', (e) => {
+            if (this.userColor) {
+                set(ref(this.db, `game/${this.gameId}/users/${this.userColor}`), null);
+            }
+        });
     }
 
     restart() {
+        set(ref(this.db, `game/${this.gameId}/log`), []);
+        set(ref(this.db, `game/${this.gameId}/winner`), null);
         this.board.board.forEach((row) => {
             row.forEach((cell) => {
                 cell.unit = null;
@@ -33,7 +103,8 @@ export class ZodiacChess {
         });
         this.setUnits();
         this.setGame = false;
-        this.turn = 'red';
+        this.turn = 'blue';
+        set(ref(this.db, `game/${this.gameId}/turn`), 'blue');
         this.turnChange();
         this.deleteRestartBtn();
         this.blueBoard.board = [];
@@ -62,6 +133,7 @@ export class ZodiacChess {
     }
 
     createRestartBtn() {
+        this.deleteRestartBtn();
         let restartBtn = document.createElement('button');
         restartBtn.classList.add('restart-btn');
         restartBtn.innerText = 'Restart';
@@ -72,8 +144,9 @@ export class ZodiacChess {
     }
 
     deleteRestartBtn() {
-        let restartBtn = document.querySelector('.restart-btn');
-        restartBtn.remove();
+        document.body.querySelectorAll('.restart-btn').forEach((btn) => {
+            btn.remove();
+        });
     }
 
     setUnits() {
@@ -107,16 +180,23 @@ export class ZodiacChess {
         if (!this.setGame) {
             this.turn = this.turn === 'blue' ? 'red' : 'blue';
             this.renderMsgBox(`<span style="color: ${this.turn}">${this.turn.charAt(0).toLocaleUpperCase()}${this.turn.slice(1)}</span> turn`);
-            clearInterval(this.turnTimer);
-            this.time = this.gameTime;
-            this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
-            this.turnTimer = setInterval(() => {
-                this.time -= 1000;
+
+            set(ref(this.db, `game/${this.gameId}/turn`), this.turn);
+
+            if (this.userColor === 'blue') {
+                clearInterval(this.turnTimer);
+                this.time = this.gameTime;
+                set(ref(this.db, `game/${this.gameId}/time`), this.time);
                 this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
-                if (this.time <= 0) {
-                    this.checkWin(this.turn === 'blue' ? 'red' : 'blue');
-                }
-            }, 1000);
+                this.turnTimer = setInterval(() => {
+                    set(ref(this.db, `game/${this.gameId}/time`), this.time);
+                    this.time -= 1000;
+                    this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
+                    if (this.time <= 0) {
+                        this.checkWin(this.turn === 'blue' ? 'red' : 'blue');
+                    }
+                }, 1000);
+            }
         }
     }
 
@@ -124,6 +204,9 @@ export class ZodiacChess {
         this.addLog(`<span style="font-weight: 700; color: ${winner}">${winner.charAt(0).toLocaleUpperCase()}${winner.slice(1)}</span> Win`);
         this.setGame = true;
         clearTimeout(this.turnTimer);
+        set(ref(this.db, `game/${this.gameId}/time`), this.gameTime);
+        set(ref(this.db, `game/${this.gameId}/winner`), winner);
+        this.gameStatus = false;
         this.renderMsgBox(`<span style="color: ${winner}">${winner.charAt(0).toLocaleUpperCase()}${winner.slice(1)}</span> win`);
         this.createRestartBtn();
     }
@@ -133,13 +216,14 @@ export class ZodiacChess {
         log.innerHTML = logText;
         log_container.appendChild(log);
 
-        // const newLog = push(ref(this.db, `game/${this.gameId}/log`));
-        // set(newLog, logText);
+        const newLog = push(ref(this.db, `game/${this.gameId}/log`));
+        set(newLog, removeTagForString(logText));
     }
 }
 
 class OtherBoard {
     constructor(zodiacChess, team) {
+        this.db = zodiacChess.db;
         this.game = zodiacChess;
         this.team = team;
         this.el = null;
@@ -147,6 +231,8 @@ class OtherBoard {
         this.move = false;
         this.board.selectedCell = null;
         this.createBoard();
+        
+        set(ref(this.db, `game/${this.game.gameId}/${this.game.userColor}Board`), this.board);
     }
 
     createBoard() {
@@ -173,6 +259,11 @@ class OtherBoard {
         this.board.forEach((cell) => {
             cell.render();
         });
+        
+        console.log(this.board.map(el => {
+            return el.unit.char;
+        }))
+        // set(ref(this.db, `game/${this.game.gameId}/${this.game.userColor}Board`), this.board);
     }
 }
 
@@ -322,6 +413,7 @@ class Cell {
         this.areaName = this.el.dataset.areaName;
         this.el.addEventListener('click', (e) => {
             if (this.board.game.setGame) return; // 게임이 끝나 있는 경우 클릭 무시
+            if (this.board.game.userColor !== this.board.game.turn) return; // 턴이 아닌 팀의 셀을 클릭한 경우 무시
 
             if (this.board.move) {
                 if (this.unit === this.board.selectedCell.unit) return; // 같은 유닛을 선택한 경우 무시
