@@ -22,8 +22,8 @@ body {
 }
 
 .cell {
-    width: 30px;
-    height: 30px;
+    width: 80px;
+    height: 80px;
     border: 1px solid #ddd;
     display: flex;
     justify-content: center;
@@ -35,6 +35,29 @@ body {
 .board {
     order: 2;
 }
+
+.board .row .cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    opacity: 0.05;
+}
+
+.board .row:nth-of-type(1) .cell:nth-of-type(1)::after { content: 'A1' }
+.board .row:nth-of-type(1) .cell:nth-of-type(2)::after { content: 'A2' }
+.board .row:nth-of-type(1) .cell:nth-of-type(3)::after { content: 'A3' }
+.board .row:nth-of-type(2) .cell:nth-of-type(1)::after { content: 'B1' }
+.board .row:nth-of-type(2) .cell:nth-of-type(2)::after { content: 'B2' }
+.board .row:nth-of-type(2) .cell:nth-of-type(3)::after { content: 'B3' }
+.board .row:nth-of-type(3) .cell:nth-of-type(1)::after { content: 'C1' }
+.board .row:nth-of-type(3) .cell:nth-of-type(2)::after { content: 'C2' }
+.board .row:nth-of-type(3) .cell:nth-of-type(3)::after { content: 'C3' }
+.board .row:nth-of-type(4) .cell:nth-of-type(1)::after { content: 'D1' }
+.board .row:nth-of-type(4) .cell:nth-of-type(2)::after { content: 'D2' }
+.board .row:nth-of-type(4) .cell:nth-of-type(3)::after { content: 'D3' }
 
 .cell.red {
     color: red;

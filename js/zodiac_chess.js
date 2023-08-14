@@ -7,7 +7,7 @@ class ZodiacChess {
         this.turn = 'blue';
         this.setGame = false;
         this.setUnits();
-        this.renderMsgBox(this.turn + ' turn');
+        this.renderMsgBox(`<span style="color: ${this.turn}">${this.turn}</span> turn`);
     }
 
     restart() {
@@ -64,7 +64,7 @@ class OtherBoard {
         this.el = null;
         this.board = [];
         this.move = false;
-        this.selectedCell = null;
+        this.board.selectedCell = null;
         this.createBoard();
     }
 
@@ -95,8 +95,11 @@ class OtherBoard {
 class OtherCell {
     constructor(board, cell, index) {
         this.board = board;
+        if(cell.unit.char === '侯'){
+            cell.unit = new Pawn();
+        }
         this.unit = cell.unit;
-        this.team = cell.team === 'red' ? 'blue' : 'red';
+        this.team = this.board.team;
         this.el = board.el.children[index];
         this.init();
     }
@@ -106,6 +109,9 @@ class OtherCell {
             if(this.board.game.setGame) return;
             if(this.team !== this.board.game.turn) return;
             this.board.game.board.revibeMode = true;
+            this.board.board.forEach(cell => {
+                cell.el.classList.remove('selected');
+            })
             this.el.classList.add('selected');
             this.board.selectedCell = this;
             this.board.game.board.selectedCell = this;
@@ -151,7 +157,7 @@ class Board {
         this.el = null;
         this.board = [];
         this.move = false;
-        this.selectedCell = null;
+        this.board.selectedCell = null;
         this.revibeMode = false;
         this.initBoard();
         this.createBoard();
@@ -285,10 +291,12 @@ class Cell {
                     });
                 }
 
+                this.board.selectedCell = null;
+
                 this.board.game.turn = this.team === 'blue' ? 'red' : 'blue';
-                this.board.game.renderMsgBox(this.board.game.turn + ' turn');
+                this.board.game.renderMsgBox(`<span style="color: ${this.team}">${this.team}</span> turn`);
                 if(targetChar === '王'){
-                    this.board.game.renderMsgBox(curTeam + ' win');
+                    this.board.game.renderMsgBox(`<span style="color: ${curTeam}">${curTeam}</span> win`);
                     return;
                 }
 
@@ -415,7 +423,7 @@ class King extends Unit {
         if(this.cell.team === 'blue'){
             if(position.y === 0){
                 if(this.lastCounter === 2){
-                    this.cell.board.game.renderMsgBox('blue win');
+                    this.cell.board.game.renderMsgBox(`<span style="color: ${this.cell.team}">${this.cell.team}</span> win`); // `blue win
                     this.cell.board.game.setGame = true;
                 }
                 this.lastCounter++;
@@ -426,7 +434,7 @@ class King extends Unit {
         if(this.cell.team === 'red'){
             if(position.y === 3){
                 if(this.lastCounter === 2){
-                    this.cell.board.game.renderMsgBox('red win');
+                    this.cell.board.game.renderMsgBox(`<span style="color: ${this.cell.team}">${this.cell.team}</span> win`); // `red win
                     this.cell.board.game.setGame = true;
                 }
                 this.lastCounter++;
@@ -445,13 +453,13 @@ class Pawn extends Unit {
     }
 
     update(position) {
-        if(this.cell.team === 'blue'){
+        if(this?.cell?.team === 'blue'){
             if(position.y === 0){
                 this.cell.unit = new Marquis();
                 this.cell.board.render();
             }
         }
-        if(this.cell.team === 'red'){
+        if(this?.cell?.team === 'red'){
             if(position.y === 3){
                 this.cell.unit = new Marquis();
                 this.cell.board.render();
