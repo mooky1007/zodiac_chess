@@ -61,8 +61,8 @@ body {
 }
 
 .cell {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -193,11 +193,37 @@ body {
     justify-content: center;
     align-items: center;
     box-shadow: 2px 2px 3px #ddd;
+    position: relative;
 }
 
 .cell .unit:hover {
     box-shadow: 2px 2px 3px #aaa;
 }
+
+.cell .unit::before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell.king .unit::before { background-image: url('../images/king.png'); }
+.cell.pawn .unit::before { background-image: url('../images/pawn.png'); }
+.cell.general .unit::before { background-image: url('../images/general.png'); }
+.cell.marquis .unit::before { background-image: url('../images/marquis.png'); }
+.cell.minister .unit::before { background-image: url('../images/minister.png'); }
+
+.cell.red.king .unit::before { background-image: url('../images/king_red.png'); }
+.cell.red.pawn .unit::before { background-image: url('../images/pawn_red.png'); }
+.cell.red.general .unit::before { background-image: url('../images/general_red.png'); }
+.cell.red.marquis .unit::before { background-image: url('../images/marquis_red.png'); }
+.cell.red.minister .unit::before { background-image: url('../images/minister_red.png'); }
 
 .other-board {
     border: 1px solid #ddd;

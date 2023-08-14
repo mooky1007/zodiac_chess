@@ -225,6 +225,13 @@ class OtherCell {
 
     render(cell, index) {
         if (this.unit?.char) {
+            this.el.classList.remove('pawn');
+            this.el.classList.remove('general');
+            this.el.classList.remove('king');
+            this.el.classList.remove('minister');
+            this.el.classList.remove('marquis');
+
+            this.el.classList.add(this.unit.enName)
             this.el.innerHTML = `<span class="unit">${this.unit.char}</span>`;
             this.el.classList.add(this.board.team);
         } else {
@@ -493,6 +500,13 @@ class Cell {
 
     render() {
         if (this.unit?.char) {
+            this.el.classList.remove('pawn');
+            this.el.classList.remove('general');
+            this.el.classList.remove('king');
+            this.el.classList.remove('minister');
+            this.el.classList.remove('marquis');
+
+            this.el.classList.add(this.unit.enName)
             this.el.innerHTML = `<span class="unit">${this.unit.char}</span>`;
             this.el.classList.remove('red');
             this.el.classList.remove('blue');
@@ -525,6 +539,7 @@ class General extends Unit {
     constructor() {
         super();
         this.char = '將';
+        this.enName = 'general';
         this.movePosition = [
             { x: 0, y: -1 },
             { x: 1, y: 0 },
@@ -538,6 +553,7 @@ class Minister extends Unit {
     constructor() {
         super();
         this.char = '相';
+        this.enName = 'minister';
         this.movePosition = [
             { x: -1, y: -1 },
             { x: 1, y: -1 },
@@ -552,6 +568,7 @@ class King extends Unit {
         super();
         this.lastCounter = 0;
         this.char = '王';
+        this.enName = 'king';
         this.movePosition = [
             { x: -1, y: -1 },
             { x: 0, y: -1 },
@@ -590,6 +607,7 @@ class Pawn extends Unit {
     constructor() {
         super();
         this.char = '子';
+        this.enName = 'pawn';
         this.movePosition = [{ x: 0, y: -1 }];
     }
 
@@ -613,6 +631,7 @@ class Marquis extends Unit {
     constructor() {
         super();
         this.char = '侯';
+        this.enName = 'marquis';
         this.movePosition = [
             { x: -1, y: -1 },
             { x: 0, y: -1 },
