@@ -1,5 +1,15 @@
-class ZodiacChess {
-    constructor() {
+import { get, ref, child, set, onValue, push } from 'https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js';
+
+export class ZodiacChess {
+    constructor(data, db) {
+        this.db = db;
+
+        onValue(ref(db, `/game`), (snapshot) => {
+            const data = snapshot.val();
+            console.log(data);
+        });
+
+        this.gameId = data?.gameId || Date.now();
         this.createMsgBox();
         this.board = new Board(this);
         this.redBoard = new OtherBoard(this, 'red');
@@ -7,7 +17,8 @@ class ZodiacChess {
         this.turn = 'red';
         this.setGame = false;
         this.turnTimer = null;
-        this.time = 30000;
+        this.time = data?.time || 30000;
+        this.gameTime = data?.time || 30000;
         this.createTimer();
         this.setUnits();
         this.turnChange();
@@ -93,16 +104,16 @@ class ZodiacChess {
     }
 
     turnChange() {
-        if(!this.setGame){
+        if (!this.setGame) {
             this.turn = this.turn === 'blue' ? 'red' : 'blue';
             this.renderMsgBox(`<span style="color: ${this.turn}">${this.turn.charAt(0).toLocaleUpperCase()}${this.turn.slice(1)}</span> turn`);
             clearInterval(this.turnTimer);
-            this.time = 30000;
+            this.time = this.gameTime;
             this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
             this.turnTimer = setInterval(() => {
                 this.time -= 1000;
                 this.timer.innerHTML = `${Math.floor(this.time / 1000)}s`;
-                if(this.time <= 0) {
+                if (this.time <= 0) {
                     this.checkWin(this.turn === 'blue' ? 'red' : 'blue');
                 }
             }, 1000);
@@ -121,6 +132,9 @@ class ZodiacChess {
         const log = document.createElement('li');
         log.innerHTML = logText;
         log_container.appendChild(log);
+
+        const newLog = push(ref(this.db, `game/${this.gameId}/log`));
+        set(newLog, logText);
     }
 }
 
@@ -301,9 +315,9 @@ class Cell {
         this.areaName = this.el.dataset.areaName;
         this.el.addEventListener('click', (e) => {
             if (this.board.game.setGame) return; // 게임이 끝나 있는 경우 클릭 무시
-            
+
             if (this.board.move) {
-                if(this.unit === this.board.selectedCell.unit) return; // 같은 유닛을 선택한 경우 무시
+                if (this.unit === this.board.selectedCell.unit) return; // 같은 유닛을 선택한 경우 무시
 
                 if (this.el.classList.contains('can-move') && this.board.reviveMode) {
                     this.revive();
@@ -383,15 +397,19 @@ class Cell {
 
     move() {
         let change = false;
-        if(this.board.selectedCell.team === 'red' && this.board.selectedCell.unit.char === "子" && this.position.y === 3) {
+        if (this.board.selectedCell.team === 'red' && this.board.selectedCell.unit.char === '子' && this.position.y === 3) {
             change = true;
         }
 
-        if(this.board.selectedCell.team === 'blue' && this.board.selectedCell.unit.char === "子" && this.position.y === 0) {
+        if (this.board.selectedCell.team === 'blue' && this.board.selectedCell.unit.char === '子' && this.position.y === 0) {
             change = true;
         }
 
-        this.board.game.addLog(`<span style=color:${this.board.selectedCell.team};>${this.board.selectedCell.unit.char}</span> ${this.board.selectedCell.areaName}→${this.areaName}${change ? ` <span style=color:${this.board.selectedCell.team};>侯</span> 전환` : ''}`)
+        this.board.game.addLog(
+            `<span style=color:${this.board.selectedCell.team};>${this.board.selectedCell.unit.char}</span> ${this.board.selectedCell.areaName}→${
+                this.areaName
+            }${change ? ` <span style=color:${this.board.selectedCell.team};>侯</span> 전환` : ''}`
+        );
 
         this.unit = this.board.selectedCell.unit;
         this.team = this.board.selectedCell.team;
@@ -400,7 +418,7 @@ class Cell {
 
         this.board.selectedCell.unit = null;
         this.board.selectedCell.team = null;
-        
+
         this.board.render();
 
         this.board.game.turnChange();
@@ -411,9 +429,11 @@ class Cell {
         if (this.team !== this.board.selectedCell.team && this.unit) {
             // 상대방 유닛을 죽인 경우
 
-            this.board.game.addLog(`<span style=color:${this.board.selectedCell.team};>${this.board.selectedCell.unit.char}</span> ${this.board.selectedCell.areaName}→${this.areaName} (<span style=color:${this.team};>${this.unit.char}</span>x)`)
+            this.board.game.addLog(
+                `<span style=color:${this.board.selectedCell.team};>${this.board.selectedCell.unit.char}</span> ${this.board.selectedCell.areaName}→${this.areaName} (<span style=color:${this.team};>${this.unit.char}</span>x)`
+            );
 
-            if(this.unit.char === '王') {
+            if (this.unit.char === '王') {
                 this.board.game.checkWin(this.board.selectedCell.team);
             }
 
@@ -435,7 +455,7 @@ class Cell {
 
             this.board.selectedCell.unit = null;
             this.board.selectedCell.team = null;
-            
+
             this.board.render();
 
             this.removeAllSelected();

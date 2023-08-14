@@ -1,20 +1,50 @@
 <!DOCTYPE html>
 <html lang="kr">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zodiac Chess</title>
-    <script src="./js/zodiac_chess.js"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
     <div class="wrapper">
         <div id="container"></div>
     </div>
     <ul id="log_container"></ul>
-    <script>
-        var zodiac_chess = new ZodiacChess();
+    <script type="module">
+        import { ZodiacChess } from "./js/zodiac_chess.mjs";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        import { getDatabase, get, ref, child, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWktPCQVPFh3x6gwLwxtXU7ddlIEPXmSQ",
+            authDomain: "zodiacchess-726d2.firebaseapp.com",
+            projectId: "zodiacchess-726d2",
+            storageBucket: "zodiacchess-726d2.appspot.com",
+            messagingSenderId: "659376674370",
+            appId: "1:659376674370:web:eea13f9cab0fd831833fdb",
+            databaseURL: "https://zodiacchess-726d2-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase();
+        const dbRef = ref(db);
+
+        const zodiac_chess = new ZodiacChess({gameId: Date.now()}, db);
+
+        // get(child(dbRef, `game`)).then((snapshot) => {
+        //     if (snapshot.exists()) {
+        //         const data = snapshot.val();
+        //         const zodiac_chess = new ZodiacChess({...data, gameId: Date.now()}, db);
+        //     }
+        // }).catch((error) => {
+        //     console.error(error);
+        // });
     </script>
 </body>
+
 </html>
