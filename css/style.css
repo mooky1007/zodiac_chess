@@ -213,17 +213,17 @@ body {
     background-position: center;
 }
 
-.cell.king .unit::before { background-image: url('../images/king.png'); }
-.cell.pawn .unit::before { background-image: url('../images/pawn.png'); }
-.cell.general .unit::before { background-image: url('../images/general.png'); }
-.cell.marquis .unit::before { background-image: url('../images/marquis.png'); }
-.cell.minister .unit::before { background-image: url('../images/minister.png'); }
+.board .cell.king .unit::before { background-image: url('../images/king.png'); }
+.board .cell.pawn .unit::before { background-image: url('../images/pawn.png'); }
+.board .cell.general .unit::before { background-image: url('../images/general.png'); }
+.board .cell.marquis .unit::before { background-image: url('../images/marquis.png'); }
+.board .cell.minister .unit::before { background-image: url('../images/minister.png'); }
 
-.cell.red.king .unit::before { background-image: url('../images/king_red.png'); }
-.cell.red.pawn .unit::before { background-image: url('../images/pawn_red.png'); }
-.cell.red.general .unit::before { background-image: url('../images/general_red.png'); }
-.cell.red.marquis .unit::before { background-image: url('../images/marquis_red.png'); }
-.cell.red.minister .unit::before { background-image: url('../images/minister_red.png'); }
+.board .cell.red.king .unit::before { background-image: url('../images/king_red.png'); }
+.board .cell.red.pawn .unit::before { background-image: url('../images/pawn_red.png'); }
+.board .cell.red.general .unit::before { background-image: url('../images/general_red.png'); }
+.board .cell.red.marquis .unit::before { background-image: url('../images/marquis_red.png'); }
+.board .cell.red.minister .unit::before { background-image: url('../images/minister_red.png'); }
 
 .other-board {
     border: 1px solid #ddd;
