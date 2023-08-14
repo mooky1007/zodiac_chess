@@ -23,7 +23,7 @@ class ZodiacChess {
     createMsgBox() {
         let msgBox = document.createElement('div');
         msgBox.classList.add('msg-box');
-        document.body.appendChild(msgBox);
+        document.body.prepend(msgBox);
     }
 
     renderMsgBox(msg) {
@@ -76,7 +76,7 @@ class OtherBoard {
             let cell = document.createElement('div');
             cell.classList.add('cell');
             board.appendChild(cell);
-            document.body.appendChild(board);
+            container.appendChild(board);
         }
 
         this.el = board;
@@ -193,7 +193,7 @@ class Board {
             }
             board.appendChild(row);
         }
-        document.body.appendChild(board);
+        container.appendChild(board);
 
         this.el = board;
         this.update();
@@ -294,7 +294,7 @@ class Cell {
                 this.board.selectedCell = null;
 
                 this.board.game.turn = this.team === 'blue' ? 'red' : 'blue';
-                this.board.game.renderMsgBox(`<span style="color: ${this.team}">${this.team}</span> turn`);
+                this.board.game.renderMsgBox(`<span style="color: ${this.board.game.turn}">${this.board.game.turn}</span> turn`);
                 if(targetChar === '王'){
                     this.board.game.renderMsgBox(`<span style="color: ${curTeam}">${curTeam}</span> win`);
                     return;
