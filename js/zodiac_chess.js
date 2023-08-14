@@ -141,7 +141,7 @@ class OtherCell {
 
     render(cell, index) {
         if(this.unit?.char){
-            this.el.innerHTML = this.unit.char;
+            this.el.innerHTML = `<span class="unit">${this.unit.char}</span>`
             this.el.classList.add(this.board.team);
         }else{
             this.el.classList.remove('red');
@@ -346,7 +346,7 @@ class Cell {
 
     render() {
         if(this.unit?.char){
-            this.el.innerHTML = this.unit.char;
+            this.el.innerHTML = `<span class="unit">${this.unit.char}</span>`;
             this.el.classList.remove('red');
             this.el.classList.remove('blue');
             this.el.classList.add(this.team);
