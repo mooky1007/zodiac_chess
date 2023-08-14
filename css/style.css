@@ -179,6 +179,10 @@ body {
     background-color: rgba(0,255,0, 0.1) !important;
 }
 
+.cell.red .unit {
+    transform: rotate(180deg);
+}
+
 .cell .unit {
     cursor: pointer;
     background: #fff;
