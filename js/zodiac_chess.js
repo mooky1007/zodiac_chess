@@ -18,6 +18,10 @@ class ZodiacChess {
             })
         })
         this.setUnits();
+        this.setGame = false;
+        this.turn = 'blue';
+        this.renderMsgBox(`<span style="color: ${this.turn}">${this.turn}</span> turn`);
+        this.deleteRestartBtn();
     }
 
     createMsgBox() {
@@ -29,6 +33,21 @@ class ZodiacChess {
     renderMsgBox(msg) {
         let msgBox = document.querySelector('.msg-box');
         msgBox.innerHTML = msg;
+    }
+
+    createRestartBtn() {
+        let restartBtn = document.createElement('button');
+        restartBtn.classList.add('restart-btn');
+        restartBtn.innerText = 'Restart';
+        restartBtn.addEventListener('click', e => {
+            this.restart();
+        });
+        document.body.append(restartBtn);
+    }
+    
+    deleteRestartBtn() {
+        let restartBtn = document.querySelector('.restart-btn');
+        restartBtn.remove();
     }
 
     setUnits() {
@@ -297,6 +316,8 @@ class Cell {
                 this.board.game.renderMsgBox(`<span style="color: ${this.board.game.turn}">${this.board.game.turn}</span> turn`);
                 if(targetChar === '王'){
                     this.board.game.renderMsgBox(`<span style="color: ${curTeam}">${curTeam}</span> win`);
+                    this.board.game.setGame = true;
+                    this.board.game.createRestartBtn();
                     return;
                 }
 
@@ -424,6 +445,8 @@ class King extends Unit {
             if(position.y === 0){
                 if(this.lastCounter === 2){
                     this.cell.board.game.renderMsgBox(`<span style="color: ${this.cell.team}">${this.cell.team}</span> win`); // `blue win
+                    this.board.game.setGame = true;
+                    this.cell.board.game.createRestartBtn();
                     this.cell.board.game.setGame = true;
                 }
                 this.lastCounter++;
@@ -435,6 +458,8 @@ class King extends Unit {
             if(position.y === 3){
                 if(this.lastCounter === 2){
                     this.cell.board.game.renderMsgBox(`<span style="color: ${this.cell.team}">${this.cell.team}</span> win`); // `red win
+                    this.board.game.setGame = true;
+                    this.cell.board.game.createRestartBtn();
                     this.cell.board.game.setGame = true;
                 }
                 this.lastCounter++;
