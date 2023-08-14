@@ -21,10 +21,39 @@ body {
     height: 100%;
 }
 
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
 #container {
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: stretch;
+}
+
+#log_container {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    max-height: 100px;
+    overflow: auto;
+    display: none;
+}
+
+#log_container li {
+    list-style: none;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#log_container li:last-of-type {
+    border-bottom: none;
 }
 
 .row {
@@ -43,11 +72,20 @@ body {
 
 .board {
     border: 1px solid #ddd;
+    align-self: center;
     order: 2;
 }
 
 .board .row {
     border-bottom: 1px solid #ddd;
+}
+
+.board .row:first-of-type {
+    background-color: rgba(255,0,0,0.05);
+}
+
+.board .row:last-of-type {
+    background-color: rgba(0,0,255,0.05);
 }
 
 .board .row:last-of-type {
@@ -159,26 +197,27 @@ body {
 
 .other-board {
     border: 1px solid #ddd;
+    display: flex;
 }
 
 .other-board.red {
-    background-color: rgba(255,0,0, 0.05);
     order: 1;
-    margin-right: 10px;
+    margin-bottom: 20px;
 }
 
 .other-board.blue {
-    background-color: rgba(0,0,255, 0.05);
     order: 3;
-    margin-left: 10px;
+    margin-top: 20px;
 }
 
 .other-board .cell {
-    border-bottom: 1px solid #ddd;
+    width: 40px;
+    height: 40px;
+    border-right: 1px solid #ddd;
 }
 
 .other-board .cell:last-of-type {
-    border-bottom: none;
+    border-right: none;
 }
 
 .msg-box {
@@ -189,11 +228,12 @@ body {
 .restart-btn {
     padding: 10px;
     width: 100%;
-    max-width: 326px;
+    max-width: 200px;
     margin-top: 20px;
     border: none;
     border-radius: 5px;
     background-color: #000;
     color: #fff;
     cursor: pointer;
+    font-size: 24px;
 }
